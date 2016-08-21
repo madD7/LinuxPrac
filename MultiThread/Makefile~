@@ -37,7 +37,7 @@ endif
 ifeq ($(OS), Lin)
 	EXE := $(EXE).out
 else
-	EXE := $(EXE).exe
+	EXE := $(EXE0.exe
 endif
 
 ifeq ($(DEBUG), 1)
