@@ -11,11 +11,19 @@
  * But, the global variables, file descriptors, signal handlers & current directory state are shared.
  */
 
-
+/* The global variable is shared between threads */
+int gVar1=0;
 
 void* threadFunct1(void* pUnused)
 {
+	int i;
 	printf("Hello Thread 1\n");
+
+	for(i=0; i<5;i++)
+	{
+		printf("threadFunct1: value of global variable is %d\n", gVar1++);
+		usleep(10);
+	}
 
 	/* This string is passed to the parent thread, arg 2 of pthread_join function */
 	pthread_exit("threadFunct1 exit\n");
@@ -24,7 +32,7 @@ void* threadFunct1(void* pUnused)
 
 int main()
 {
-	int status=0;
+	int status=0, i;
 	pthread_t tid1;
 	void* pThreadArg;
 		
@@ -36,6 +44,13 @@ int main()
 		perror("Failed to create thread\n");
 		exit(EXIT_FAILURE);
 	}
+
+	for(i=0; i<5;i++)
+	{
+		printf("main: value of global variable is %d\n", gVar1++ );
+		usleep(12);
+	}
+
 	printf("Waiting for threadFunct1 to finish\n");
 
 	/**
