@@ -55,7 +55,7 @@ endif
 
 VPATH := $(SRCDIR_PATH)
 
-SRCS = main.c
+SRCS = main.c reentrant.c
 OBJS = $(patsubst %.c, $(OBJDIR_PATH)/%.o, $(SRCS))
 
 
@@ -77,3 +77,5 @@ build:	$(OBJS)
 		
 clean :
 	rm -f $(OBJS) $(EXE)
+
+

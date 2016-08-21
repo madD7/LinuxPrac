@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <pthread.h>
-
+#include "appInclude.h"
+#include "reentrant.h"
 
 /**
  * Multiple flow of control in a single program are known as threads.
@@ -17,11 +13,12 @@ int gVar1=0;
 void* threadFunct1(void* pUnused)
 {
 	int i;
-	printf("Hello Thread 1\n");
+	printf("Hello threadFunct1\n");
 
 	for(i=0; i<5;i++)
 	{
-		printf("threadFunct1: value of global variable is %d\n", gVar1++);
+		printf("threadFunct1: \t gVar1=%d\n", gVar1++);
+		nonReentrant();
 		usleep(10);
 	}
 
@@ -47,7 +44,8 @@ int main()
 
 	for(i=0; i<5;i++)
 	{
-		printf("main: value of global variable is %d\n", gVar1++ );
+		printf("main: \t\t gVar1=%d\n", gVar1++);
+		nonReentrant();
 		usleep(12);
 	}
 
