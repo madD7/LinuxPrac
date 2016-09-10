@@ -5,7 +5,7 @@
 #include "appInclude.h"
 
 void nonReentrant(void);
-
+void reEntrant(void);
 
 
 

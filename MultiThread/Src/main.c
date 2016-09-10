@@ -10,6 +10,8 @@
 /* The global variable is shared between threads */
 int gVar1=0;
 
+__thread int tgVar1=0;
+
 void* threadFunct1(void* pUnused)
 {
 	int i;
@@ -17,8 +19,9 @@ void* threadFunct1(void* pUnused)
 
 	for(i=0; i<5;i++)
 	{
-		printf("threadFunct1: \t gVar1=%d\n", gVar1++);
+		printf("threadFunct1: \t gVar1=%d \t tgVar1=%d\n", gVar1++, tgVar1++);
 		nonReentrant();
+		reEntrant();
 		usleep(10);
 	}
 
@@ -44,8 +47,9 @@ int main()
 
 	for(i=0; i<5;i++)
 	{
-		printf("main: \t\t gVar1=%d\n", gVar1++);
+		printf("main: \t\t gVar1=%d \t tgVar1=%d\n", gVar1++, tgVar1++);
 		nonReentrant();
+		reEntrant();
 		usleep(12);
 	}
 
