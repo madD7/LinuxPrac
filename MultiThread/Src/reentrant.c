@@ -28,7 +28,7 @@ void nonReentrant()
 	   Thus, this is not a threadsafe function.
 	 */
 	static int i=0;
-	printf("nonReEntrant function: local variable i=%d\t", i++);
+	printf("nonReEntrant function:\t local variable i=%d\t", i++);
 	printf("global variable g=%d\n", g++);
 }
 
@@ -41,7 +41,7 @@ void reEntrant()
 	   Thus, this it is threadsafe and as the function uses only threadsafe variables, it is threadsafe function.
 	 */
 	static __thread int i=0;
-	printf("reEntrant function: local variable i=%d\t", i++);
+	printf("reEntrant function:\t local variable i=%d\t", i++);
 	printf("global variable tg=%d\n", tg++);
 }
 

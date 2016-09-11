@@ -8,6 +8,7 @@
 #include <string.h>
 #include <pthread.h>
 
+#include "debug.h"
 
 
 
