@@ -1,0 +1,8 @@
+total 24
+drwxrwxr-x 2 d7 d7 4096 Sep 14 00:55 Inc/
+-rw-rw-r-- 1 d7 d7 1076 Sep 14 01:10 Makefile
+drwxrwxr-x 2 d7 d7 4096 Dec 17 20:04 Obj/
+drwxrwxr-x 2 d7 d7 4096 Dec 17 20:04 Build/
+-rw-rw-r-- 1 d7 d7   85 Dec 17 20:04 output.log
+drwxrwxr-x 2 d7 d7 4096 Dec 17 20:11 Src/
+-rw-rw-r-- 1 d7 d7    0 Dec 17 20:16 temp

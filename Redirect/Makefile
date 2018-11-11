@@ -54,7 +54,7 @@ makdir:
 # $@ - Contains target file name
 # $< - Contains 1st dependency file name
 $(OBJDIR_PATH)/%.o: $(SRCDIR_PATH)/%.c
-		$(CC) -c $(CC_FLAGS) $< -o $@
+		$(CC) -c -g $(CC_FLAGS) $< -o $@
 
 build:	$(OBJS)
 	$(CC) $(CC_FLAGS) $(OBJS) $(LD_FLAGS) -o $(BUILDDIR_PATH)/$(EXE) 

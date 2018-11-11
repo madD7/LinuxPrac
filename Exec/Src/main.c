@@ -28,6 +28,8 @@ Theory:
 	_________________________________ exec() _________________________________
 	An exec function replaces the current process with a new process specified 
 	by the path or file argument.
+
+	
 	
 
 
@@ -43,6 +45,7 @@ Revision History ***************************************************************
  */
 #include <stdio.h>
 #include <stdio.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -149,14 +152,18 @@ static void CallForkedExecv(void)
 			break;
 		
 		case 0:
-			printf("In Child process. Executing \"%s %s \"\n", SLEEP_STRING, ARG20_STRING);
-			execlp(SLEEP_STRING, SLEEP_STRING, ARG20_STRING, NULL);
+			printf("In Child process. \nPid=%d\n Executing \"%s %s \"\n", pid,SLEEP_STRING, ARG15_STRING);
+			execlp(SLEEP_STRING, SLEEP_STRING, ARG15_STRING, NULL);
+			
+			// This line will not be executed
 			printf("Child execution completed\n");
 			break;
 
 		default:
-			printf("In parent process. Executing \"%s %s\"\n", SLEEP_STRING, ARG15_STRING);
-			execlp(SLEEP_STRING, SLEEP_STRING, ARG15_STRING, NULL);
+			printf("In parent process. Executing \"%s %s\"\n", SLEEP_STRING, ARG20_STRING);
+			execlp(SLEEP_STRING, SLEEP_STRING, ARG20_STRING, NULL);
+			
+			// This line will not be executed
 			printf("Parent execution completed\n");
 			break;
 	}

@@ -206,7 +206,7 @@ int ParseLineData(char* pcRd, char* pcWr, InfoStruct* psStruct)
 				return NOT_FOUND;
 			}
 
-			psStruct->pcApple = pcRd;
+			memcpy(psStruct->pcApple,pcRd,MAX_STRING_SIZE);
 		}
 		else if ( !strncmp(BEE_STR, cPreBuf,strlen(BEE_STR)) )
 		{
@@ -216,7 +216,8 @@ int ParseLineData(char* pcRd, char* pcWr, InfoStruct* psStruct)
 				LOG_ERROR("Failure in finding '=' character in string");
 				return NOT_FOUND;
 			}
-			psStruct->pcBee = pcRd;
+
+			memcpy(psStruct->pcBee, pcRd, MAX_STRING_SIZE);
 		}
 		else if ( !strncmp(CAT_STR, cPreBuf,strlen(CAT_STR)) )
 		{
@@ -226,7 +227,8 @@ int ParseLineData(char* pcRd, char* pcWr, InfoStruct* psStruct)
 				LOG_ERROR("Failure in finding '=' character in string");
 				return NOT_FOUND;
 			}
-			psStruct->pcCat = pcRd;
+
+			memcpy(psStruct->pcCat, pcRd, MAX_STRING_SIZE);
 
 			iRetval = CAT_STR_FOUND;
 		}
@@ -247,13 +249,13 @@ Notes		: None
 */
 int do_the_work(char * apple_binary, int apple_len, char * bee_binary, int bee_len, char * cat_binary, int cat_len)
 {
-	int iRetval=0;
+	static	int iRetval=1;
 
 	/*
 	   Do Some processing
 	   and update iRetval flag to 0 or 1
 	 */
-
+	
 	return iRetval;
 
 }
@@ -273,6 +275,7 @@ int main(int iArgc, char* pcArgv[])
 	InfoStruct sStruct;
 	FILE *pfInpFile;
 	FILE *pfOutFile;
+	char *pcApple, *pcBee, *pcCat;
 
 	pcRdLine = (char*)calloc(MAX_STRING_SIZE+1, sizeof(char));
 	if (pcRdLine == NULL)
@@ -295,12 +298,46 @@ int main(int iArgc, char* pcArgv[])
 		exit (DYN_MEM_ALLOC_FAIL);
 	}
 
+	pcApple = (char*)calloc(MAX_STRING_SIZE+1, sizeof(char));
+	if(pcApple == NULL)
+	{
+		LOG_ERROR("Failure in allocating memory");
+		free(pcRdLine);
+		free(pcWrLine);
+
+		exit(DYN_MEM_ALLOC_FAIL);
+	}
+	
+	pcBee = (char*)calloc(MAX_STRING_SIZE+1, sizeof(char));
+	if(pcBee == NULL)
+	{
+		LOG_ERROR("Failure in allocating memory");
+		free(pcRdLine);
+        free(pcWrLine);
+		free(pcApple);
+		exit(DYN_MEM_ALLOC_FAIL);
+	}
+	
+	pcCat = (char*)calloc(MAX_STRING_SIZE+1, sizeof(char));
+	if(pcCat == NULL)
+	{	
+		LOG_ERROR("Failure in allocating memory");
+		free(pcRdLine);
+		free(pcWrLine);
+		free(pcApple);
+		free(pcBee);
+		exit(DYN_MEM_ALLOC_FAIL);
+	}
+
 	pfInpFile = fopen(PATH_TO_INPUT, "r");
 	if(pfInpFile == NULL)
 	{
 		LOG_ERROR("Failure in opening the file: %s", PATH_TO_INPUT);
 		free(pcRdLine);
 		free(pcWrLine);
+		free(pcApple);
+		free(pcBee);
+		free(pcCat);
 		exit (FILE_OPN_FAIL);
 	}
 
@@ -310,10 +347,16 @@ int main(int iArgc, char* pcArgv[])
 		LOG_ERROR("Failure in opening the file: %s", PATH_TO_OUTPUT);
 		free(pcRdLine);
 		free(pcWrLine);
+		free(pcApple);
+	    free(pcBee);
+	    free(pcCat);
 		fclose(pfInpFile);
 		exit (FILE_OPN_FAIL);
 	}
-
+	sStruct.pcApple = pcApple;
+	sStruct.pcBee = pcBee;
+	sStruct.pcCat = pcCat;
+	
 	do 
 	{
 		memset(pcRdLine, CLR_MEM_VAL, MAX_STRING_SIZE+1);
@@ -347,10 +390,13 @@ int main(int iArgc, char* pcArgv[])
 				fprintf(pfOutFile, "%s\n", YES_STR);
 		}
 
-	}while((iRetval == SUCCESS) && (iRetval != EOF_REACHED));
+	}while((iRetval != EOF_REACHED));
 
 	free(pcRdLine);
 	free(pcWrLine);
+	free(pcApple);
+    free(pcBee);
+    free(pcCat);
 	fclose(pfInpFile);
 	fclose(pfOutFile);
 
