@@ -51,10 +51,10 @@ void* threadFunct1(void* pUnused)
 
 void* readBuf(void* pUnused)
 {
-	printf("readBuf thread\n");
+	printf("readBuf thread started\n");
 
 	/* strstr return the pointer to first occurance of 'end' in CommonBuf. Returns NULL if not found */
-	do
+	while ( !strlen((const char *) CommonBuf) || strstr ((const char*)CommonBuf, "end") == NULL )
 	{
 		/* sem_wait decreases value of semaphore.
 		 * If the value of the semaphore is 0, then flow of execution waits untill semaphore is non-zero.
@@ -67,7 +67,7 @@ void* readBuf(void* pUnused)
 		#endif
 		printf("You input %d characters\n", (int)strlen(CommonBuf)-1);
 		sleep(1);
-	}while(strstr ((const char*)CommonBuf, "end") == NULL);
+	}
 
 	printf("Existing read thread.\n");
 
@@ -167,8 +167,12 @@ void readInput_Mutex()
 	printf("Enter some text. Type 'end' to finish\n");
 	do
 	{
-//		pthread_mutex_lock(&BufMutx);
+		printf("\nIn Main thread\n");
+		
+		//Note: fgets is a blocking call. Waits untill return or end-of-file 
 		fgets(CommonBuf, sizeof(CommonBuf), stdin);
+
+		// Locked so that the thread can read CommonBuf
 		pthread_mutex_lock(&BufMutx);
 	}while(strstr(CommonBuf, "end") == NULL);
 
@@ -182,7 +186,6 @@ void readInput_Mutex()
 	
 	printf("Thread joined\n");
 	sem_destroy(&BufSem);
-
 }
 
 
@@ -236,3 +239,4 @@ int main()
 
 
 
+#include "appInclude.h"

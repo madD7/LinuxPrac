@@ -1,0 +1,9 @@
+Log file initialization successful.
+/home/d7/Desktop/LinuxPrac/Framework/Src/LogLib/log.c:309 | DEBUG: Entering function
+/home/d7/Desktop/LinuxPrac/Framework/Src/LogLib/log.c:310 | ERROR: Error logging tested
+/home/d7/Desktop/LinuxPrac/Framework/Src/LogLib/log.c:311 | WARN : Warning logging tested
+/home/d7/Desktop/LinuxPrac/Framework/Src/LogLib/log.c:312 | INFO : Info logging tested
+/home/d7/Desktop/LinuxPrac/Framework/Src/LogLib/log.c:313 | DEBUG: Debug logging tested
+/home/d7/Desktop/LinuxPrac/Framework/Src/LogLib/log.c:314 | DEBUG: Leaving function
+In main function
+Reverting back to stdout stream
