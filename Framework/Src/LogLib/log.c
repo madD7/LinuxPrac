@@ -214,10 +214,18 @@ Output		: None
 Returns		: 
 Notes		: None
 */
-void LOG_LogMsg(const CHAR* pcFName, INT iLineno, INT iLvl, const CHAR* cMsg, ...)
+void LOG_LogMsg(const CHAR* pcFName, const CHAR* pcFuncName, 
+					INT iLineno, INT iLvl,
+					RETVAL iRetVal,
+					const CHAR* cMsg, ...)
 {
 	va_list argptr;
 	FILE *pF = stdout;
+	time_t sNow;
+	struct tm* psLocal = NULL;
+
+	time(&sNow);
+	psLocal = localtime(&sNow);
 
 	/* If Set verbosity is higher than message verbosity,
 	   then dont log the message
@@ -234,20 +242,29 @@ void LOG_LogMsg(const CHAR* pcFName, INT iLineno, INT iLvl, const CHAR* cMsg, ..
 		pF = stdout;
 	}
 
-	if(pcFName != NULL)
-		fprintf(pF, "%s:%d | ", pcFName, iLineno);
+	fprintf(pF,"%02d-%02d-%04d %02d:%02d:%02d |",
+				psLocal->tm_mday,
+				psLocal->tm_mon + 1,
+				psLocal->tm_year + 1900,
+				psLocal->tm_hour,
+				psLocal->tm_min,
+				psLocal->tm_sec);
 
 	if(iLvl == LOGS_ERROR)
-		fprintf(pF, "%s", "ERROR: ");
+		fprintf(pF, " %s=%5d | ", "ERROR",iRetVal);
 	else if(iLvl == LOGS_WARN)
-		fprintf(pF, "%s", "WARN : ");
+		fprintf(pF, " %s=%5d | ", "WARN ",iRetVal);
 	else if(iLvl == LOGS_INFO)
-		fprintf(pF, "%s", "INFO : ");
+		fprintf(pF, " %s=%5d | ", "INFO ",iRetVal);
 	else if (iLvl >= LOGS_DEBUG)
-		fprintf(pF, "%s", "DEBUG: ");
+		fprintf(pF, " %s=%5d | ", "DEBUG",iRetVal);
 
 	va_start(argptr, cMsg);
 	vfprintf(pF, cMsg, argptr);
+	
+	if(pcFName != NULL)
+		fprintf(pF, " | %s:%d- %s() ", pcFName, iLineno, pcFuncName);
+
 	fprintf(pF,"\n");											
 	va_end(argptr);	
 }
@@ -261,16 +278,28 @@ Output		: None
 Returns		: 
 Notes		: None
 */
+static void PrintHelp()
+{
+	printf("Usage \n <Logfilepath> <verbosity>\n verbsity: ERROR/WARN/INFO/DEBUG\n");
+}
+
+/***************************************************************************************
+Description	: 
+Input		: 
+Output		: None
+Returns		: 
+Notes		: None
+*/
 INT main(INT iArgc, CHAR** pArgs)
 {
 	INT iVerb=LOGS_ERROR;
 	FILENAME caAppname = "LogLib";
 
-	if(iArgc < 2)
+	if(iArgc < 3)
 	{
 		errno = EINVAL;
-		perror("Input arguments less than required arguments");
-		printf("Usage \n <Logfilepath> <verbosity>\n verbsity: ERROR/WARN/INFO/DEBUG\n");
+		perror("Input argument count less than required arguments");
+		PrintHelp();
 		return FAILURE;
 	}
 
@@ -294,11 +323,9 @@ INT main(INT iArgc, CHAR** pArgs)
 	{
 		errno = EINVAL;
 		perror("Invalid verbosity");
-        printf("Usage \n <Logfilepath> <verbosity>\n verbsity: ERROR/WARN/INFO/DEBUG\n");
+        PrintHelp();
         return FAILURE;
 	}
-
-	printf("%s %s %s\n", pArgs[0], caAppname, pArgs[2]);
 
 	if ( LOG_Init(pArgs[1], caAppname, iVerb) != 0)
 	{
@@ -306,12 +333,12 @@ INT main(INT iArgc, CHAR** pArgs)
 		return -1;
 	}
 
-	LOG_FUNC_IN;
-	LOG_ERROR("Error logging tested");
-	LOG_WARN("Warning logging tested");
-	LOG_INFO("Info logging tested");
-	LOG_DEBUG("Debug logging tested");
-	LOG_FUNC_OUT;
+	LOG_FUNC_IN
+	LOG_ERROR(errno, "Error logging tested");
+	LOG_WARN(errno, "Warning logging tested");
+	LOG_INFO(errno, "Info logging tested");
+	LOG_DEBUG(errno, "Debug logging tested");
+	LOG_FUNC_OUT
 
 	printf("In main function\n");
 	printf("Reverting back to stdout stream\n");

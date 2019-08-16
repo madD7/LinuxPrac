@@ -33,8 +33,8 @@ Revision History ***************************************************************
 /***************************************************************************************
  RETURN STATUS MACROS
 */
-#define SUCCESS		0
-#define FAILURE		-1
+#define SUCCESS		EXIT_SUCCESS
+#define FAILURE		EXIT_FAILURE
 
 /*
  * @}
@@ -83,6 +83,9 @@ typedef LDOUBLE				DOUBLE96;
 typedef	INT					RETVAL;
 typedef CHAR FILEPATH[PATH_MAX];
 typedef CHAR FILENAME[PATH_MAX]; 
+
+
+typedef void* (FuncThreadStart_pV_pV)(void *);
 
 /*
  * @}

@@ -15,20 +15,20 @@ else
 endif
 
 
-DEBUG=0
-TESTMODULE=0
+#DEBUG = 0
+#TESTMODULE = 0
 
-CC_PATH= 
-CC=$(CC_PATH)gcc
-CC_FLAGS:= -Wall -Wextra
-LD_FLAGS= 
+CC_PATH = 
+CC = $(CC_PATH)gcc
+CC_FLAGS := -Wall -Wextra
+LD_FLAGS = 
 
-ROOTDIR_PATH=$(LINUX_DEVDIR)/Framework
-BUILDDIR_PATH=$(ROOTDIR_PATH)/Exe
-SRCDIR_PATH=$(ROOTDIR_PATH)/Src/LogLib
-INCDIR_PATH=$(ROOTDIR_PATH)/Inc
-OBJDIR_PATH=$(ROOTDIR_PATH)/Obj
-LIB=liblog.a
+ROOTDIR_PATH = $(LINUX_DEVDIR)/Framework
+BUILDDIR_PATH = $(ROOTDIR_PATH)/Exe
+SRCDIR_PATH = $(ROOTDIR_PATH)/Src/LogLib
+INCDIR_PATH = $(ROOTDIR_PATH)/Inc
+OBJDIR_PATH = $(ROOTDIR_PATH)/Obj
+LIB = liblog.a
 
 CC_FLAGS:= $(CC_FLAGS) -I $(INCDIR_PATH) 
 
@@ -41,13 +41,13 @@ ifeq ($(DEBUG), 1)
 CC_FLAGS:= $(CC_FLAGS) -g
 endif
 
-ifeq ($(TESTMODULE), 0)
-OUTFILE= $(LIB)
-CMD= ar -r $(BUILDDIR_PATH)/$(OUTFILE) -o $^ 
-else
+ifeq ($(TESTMODULE), 1)
 OUTFILE= log 
 CC_FLAGS:= $(CC_FLAGS) -D__TESTING__
 CMD= $(CC) $(CC_FLAGS) $(OBJS) -o $(BUILDDIR_PATH)/$(OUTFILE)
+else
+OUTFILE= $(LIB)
+CMD= ar -r $(BUILDDIR_PATH)/$(OUTFILE) -o $^ 
 endif
 
 VPATH:=$(SRCDIR_PATH)
@@ -72,6 +72,11 @@ build:	$(OBJS)
 	$(CMD) 
 		
 clean :
-	rm -f $(OBJS) $(EXE)
+	rm -f $(OBJS) $(BUILDDIR_PATH)/$(OUTFILE)
 
-
+help:
+	@echo "Targets:"
+	@echo "all - Complete build"
+	@echo "clean - clean all build files"
+	@echo "Use DEBUG=1 - To compile with debugging enabled"
+	@echo "Use TESTMODULE=1 - To generate exe to test the module code"

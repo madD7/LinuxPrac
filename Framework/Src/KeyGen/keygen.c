@@ -1,7 +1,4 @@
-/**************************************** MAD Engineers ****************************************
-
-  MAD Engineers
-  Copyright (c) 2014
+/****************************************
 
 Description	: Generic key_t generator, which can be used for msgget(), shmget(), semget()
 			
@@ -66,7 +63,7 @@ Revision History ***************************************************************
  * @{
  */
 #include <sys/ipc.h>
-
+#include "log.h"
 
 /*
  * @}
@@ -104,33 +101,34 @@ Output		: key_t
 Returns		: 
 Notes		: None
 */
-int GenerateKey(char *pcKeyString, key_t *pikey)
+RETVAL GenerateKey(CHAR *pcKeyString, key_t *pikey)
 {
-	int iFd = 0;
+	INT iFd = 0;
+	INT	iErrno=0;
 	struct stat sFileStat;
 
 	/* Open the Key File */
 	iFd = open(pcKeyString, O_CREATE|O_RDWR, KEY_FILE_PERMISSION);
+	iErrno = errno;
 	if (iFd == -1)
 	{
-		printf("Error in creating the key file [%s] Error [%s]",
-				pcKeyString,
-				strerror(errno)
-				);
+		LOG_ERROR(iErrno, "Error in creating the key file [%s] Error [%s]",
+					pcKeyString,
+					strerror(errno));
 		
-		return iFd;
+		return iErrno;
 	}
 
 	close(iFd);
 
 	if ( lstat (pcKeyString, &sFileStat) == -1 )
 	{
-		printf("Error in getting inode number for the key file [%s] Error [%s]",
+		iErrno=errno;
+		LOG_ERROR(iErrno, "Error in getting inode number for the key file [%s] Error [%s]",
 				pcKeyString,
-				strerror(errno)
-				);
+				strerror(errno));
 
-		return -1;
+		return iErrno;
 	}
 
 
@@ -138,12 +136,13 @@ int GenerateKey(char *pcKeyString, key_t *pikey)
 
 	if ( *piKey == -1)
 	{
-		printf("Error in generating key for the key file [%s]",
-				pcKeyString
-				);
+		iErrno = -1;
+		LOG_ERROR( iErrno,"Error in generating key for the key file [%s]",
+					pcKeyString	);
+		return iErrno;
 	}
 
-	return 0;
+	return SUCCESS;
 }
 
 /*

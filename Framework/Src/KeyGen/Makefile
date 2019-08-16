@@ -15,33 +15,52 @@ else
 endif
 
 
-DEBUG = 0
 
 CC_PATH = 
 CC = $(CC_PATH)gcc
-CC_FLAGS = -Wall -Wextra -I$(INCDIR_PATH)
+CC_FLAGS = -Wall -Wextra
 LD_FLAGS = 
 
-ROOTDIR_PATH= ..
-BUILDDIR_PATH= $(ROOTDIR_PATH)/Exes/Build
-SRCDIR_PATH= $(ROOTDIR_PATH)/Src
-INCDIR_PATH= $(ROOTDIR_PATH)/Inc
-OBJDIR_PATH= $(ROOTDIR_PATH)/Exes/Obj
-LIB=libkeygen$(OS)$(ARCH).a
+ROOTDIR_PATH = $(LINUX_DEVDIR)/Framework
+BUILDDIR_PATH = $(ROOTDIR_PATH)/Exe
+SRCDIR_PATH = $(ROOTDIR_PATH)/Src/KeyGen
+INCDIR_PATH = $(ROOTDIR_PATH)/Inc
+OBJDIR_PATH = $(ROOTDIR_PATH)/Exes/Obj
+LIB =libkeygen.a
 
+CC_FLAGS := $(CC_FLAGS) -I $(INCDIR_PATH)
 
 ifeq ($(ARCH), 32)
 	CC_FLAGS := $(CC_FLAGS) -m32
 endif
 
+ifeq ($(DEBUG), 1)
+CC_FLAGS := $(CC_FLAGS) -g
+endif
+
+LD_FLAGS := $(LD_FLAGS) -llog -L$(BUILDDIR_PATH)
+
+ifeq ($(TESTMODULE), 1)
+OUTFILE = keygen
+CC_FLAGS := $(CC_FLAGS) -D__TESTING__
+CMD = $(CC) $(CC_FLAGS) $(OBJS) $(LD_FLAGS) -o $(BUILDDIR_PATH)/$(OUTFILE)
+else
+OUTFILE = $(LIB)
+CMD = ar -r $(BUILDDIR_PATH)/$(OUTFILE) -o $^
+endif
+
+
 VPATH := $(SRCDIR_PATH)
 
-SRCS = $(wildcard $(SRCDIR_PATH)/*.c) 
-OBJS = $(patsubst %.c, $(OBJDIR_PATH)/%.o, $(SRCS))
+#SRCS := $(wildcard $(SRCDIR_PATH)/*.c) 
+#OBJS = $(patsubst %.c, $(OBJDIR_PATH)/%.o, $(SRCS))
+
+SRCS := $(shell find $(SRCDIR_PATH) -name '*.c')								
+OBJS := $(addprefix $(ROOTDIR_PATH)/,$(SOURCES:%.c=%.o))
 
 .PHONY: all clean build
 
-all : clean makdir build
+all: clean makdir build
 makdir:
 	mkdir -p $(OBJDIR_PATH)
 	mkdir -p $(BUILDDIR_PATH)
@@ -50,12 +69,18 @@ makdir:
 # $@ - Contains target file name
 # $< - Contains 1st dependency file name
 $(OBJDIR_PATH)/%.o: $(SRCDIR_PATH)/%.c
-		$(CC) -c $(CC_FLAGS) $< -o $@
+		$(CC) -c $(CC_FLAGS) $(LD_FLAGS) $< -o $@
 
-build:	$(OBJS)
-	ar -r $(BUILDDIR_PATH)/$(LIB) -o $^ 
+build: $(OBJS)
+	$(CMD)
 		
-clean :
-	rm -f $(OBJS) $(EXE)
+clean:
+	rm -f $(OBJS) $(BUILDDIR_PATH)/$(OUTFILE)
 
+help:
+	@echo "Targets:"
+	@echo "all - Complete build"
+	@echo "clean - clean all build files"
+	@echo "Use DEBUG=1 - To compile with debugging enabled"
+	@echo "Use TESTMODULE=1 - To generate exe to test the module code"
 
