@@ -37,9 +37,20 @@
 
 # Temporary files
 *~
+*.txt
+
+# Zipped files
+*.tar.gz
+
+# Log files
+*.log
+*.out
+
 
 #Folders
-/Obj
-/Build
+Framework/Obj
+Framework/Exe
+App/Obj
+App/Exe
 
 
