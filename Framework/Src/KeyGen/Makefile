@@ -15,34 +15,33 @@ else
 endif
 
 
-
 CC_PATH = 
 CC = $(CC_PATH)gcc
 CC_FLAGS = -Wall -Wextra
 LD_FLAGS = 
 
-ROOTDIR_PATH = $(LINUX_DEVDIR)/Framework
-BUILDDIR_PATH = $(ROOTDIR_PATH)/Exe
-SRCDIR_PATH = $(ROOTDIR_PATH)/Src/KeyGen
-INCDIR_PATH = $(ROOTDIR_PATH)/Inc
-OBJDIR_PATH = $(ROOTDIR_PATH)/Exes/Obj
-LIB =libkeygen.a
+ROOTDIR_PATH := $(LINUX_DEVDIR)/Framework
+BUILDDIR_PATH := $(ROOTDIR_PATH)/Exe
+SRCDIR_PATH := $(ROOTDIR_PATH)/Src/KeyGen
+INCDIR_PATH := $(ROOTDIR_PATH)/Inc
+OBJDIR_PATH := $(ROOTDIR_PATH)/Obj
+LIB:=libkeygen.a
 
-CC_FLAGS := $(CC_FLAGS) -I $(INCDIR_PATH)
+CC_FLAGS += -I $(INCDIR_PATH)
 
 ifeq ($(ARCH), 32)
-	CC_FLAGS := $(CC_FLAGS) -m32
+	CC_FLAGS += -m32
 endif
 
 ifeq ($(DEBUG), 1)
-CC_FLAGS := $(CC_FLAGS) -g
+CC_FLAGS += -g
 endif
 
-LD_FLAGS := $(LD_FLAGS) -llog -L$(BUILDDIR_PATH)
+LD_FLAGS := -L$(BUILDDIR_PATH) -llog 
 
 ifeq ($(TESTMODULE), 1)
-OUTFILE = keygen
-CC_FLAGS := $(CC_FLAGS) -D__TESTING__
+OUTFILE = key
+CC_FLAGS += -D__TESTING__
 CMD = $(CC) $(CC_FLAGS) $(OBJS) $(LD_FLAGS) -o $(BUILDDIR_PATH)/$(OUTFILE)
 else
 OUTFILE = $(LIB)
@@ -52,11 +51,8 @@ endif
 
 VPATH := $(SRCDIR_PATH)
 
-#SRCS := $(wildcard $(SRCDIR_PATH)/*.c) 
-#OBJS = $(patsubst %.c, $(OBJDIR_PATH)/%.o, $(SRCS))
-
-SRCS := $(shell find $(SRCDIR_PATH) -name '*.c')								
-OBJS := $(addprefix $(ROOTDIR_PATH)/,$(SOURCES:%.c=%.o))
+SRCS := $(wildcard $(SRCDIR_PATH)/*.c) 
+OBJS := $(patsubst $(SRCDIR_PATH)/%.c, $(OBJDIR_PATH)/%.o, $(SRCS))
 
 .PHONY: all clean build
 

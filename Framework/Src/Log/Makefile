@@ -15,49 +15,46 @@ else
 endif
 
 
-#DEBUG = 0
-#TESTMODULE = 0
-
 CC_PATH = 
 CC = $(CC_PATH)gcc
-CC_FLAGS := -Wall -Wextra
+CC_FLAGS = -Wall -Wextra
 LD_FLAGS = 
 
-ROOTDIR_PATH = $(LINUX_DEVDIR)/Framework
-BUILDDIR_PATH = $(ROOTDIR_PATH)/Exe
-SRCDIR_PATH = $(ROOTDIR_PATH)/Src/LogLib
-INCDIR_PATH = $(ROOTDIR_PATH)/Inc
-OBJDIR_PATH = $(ROOTDIR_PATH)/Obj
-LIB = liblog.a
+ROOTDIR_PATH := $(LINUX_DEVDIR)/Framework
+BUILDDIR_PATH := $(ROOTDIR_PATH)/Exe
+SRCDIR_PATH := $(ROOTDIR_PATH)/Src/Log
+INCDIR_PATH := $(ROOTDIR_PATH)/Inc
+OBJDIR_PATH := $(ROOTDIR_PATH)/Obj
+LIB:=liblog.a
 
-CC_FLAGS:= $(CC_FLAGS) -I $(INCDIR_PATH) 
-
+CC_FLAGS += -I $(INCDIR_PATH)
 
 ifeq ($(ARCH), 32)
-CC_FLAGS:= $(CC_FLAGS) -m32
+	CC_FLAGS += -m32
 endif
 
 ifeq ($(DEBUG), 1)
-CC_FLAGS:= $(CC_FLAGS) -g
+CC_FLAGS += -g
 endif
 
 ifeq ($(TESTMODULE), 1)
-OUTFILE= log 
-CC_FLAGS:= $(CC_FLAGS) -D__TESTING__
-CMD= $(CC) $(CC_FLAGS) $(OBJS) -o $(BUILDDIR_PATH)/$(OUTFILE)
+OUTFILE = log
+CC_FLAGS += -D__TESTING__
+CMD = $(CC) $(CC_FLAGS) $(OBJS) $(LD_FLAGS) -o $(BUILDDIR_PATH)/$(OUTFILE)
 else
-OUTFILE= $(LIB)
-CMD= ar -r $(BUILDDIR_PATH)/$(OUTFILE) -o $^ 
+OUTFILE = $(LIB)
+CMD = ar -r $(BUILDDIR_PATH)/$(OUTFILE) -o $^
 endif
 
-VPATH:=$(SRCDIR_PATH)
 
-SRCS=log.c 
-OBJS=$(patsubst %.c, $(OBJDIR_PATH)/%.o, $(SRCS))
+VPATH := $(SRCDIR_PATH)
+
+SRCS := $(wildcard $(SRCDIR_PATH)/*.c) 
+OBJS := $(patsubst $(SRCDIR_PATH)/%.c, $(OBJDIR_PATH)/%.o, $(SRCS))
 
 .PHONY: all clean build
 
-all : clean makdir build
+all: clean makdir build
 makdir:
 	mkdir -p $(OBJDIR_PATH)
 	mkdir -p $(BUILDDIR_PATH)
@@ -66,12 +63,12 @@ makdir:
 # $@ - Contains target file name
 # $< - Contains 1st dependency file name
 $(OBJDIR_PATH)/%.o: $(SRCDIR_PATH)/%.c
-		$(CC) -c $(CC_FLAGS) $< -o $@
+		$(CC) -c $(CC_FLAGS) $(LD_FLAGS) $< -o $@
 
-build:	$(OBJS)
-	$(CMD) 
+build: $(OBJS)
+	$(CMD)
 		
-clean :
+clean:
 	rm -f $(OBJS) $(BUILDDIR_PATH)/$(OUTFILE)
 
 help:
@@ -80,3 +77,4 @@ help:
 	@echo "clean - clean all build files"
 	@echo "Use DEBUG=1 - To compile with debugging enabled"
 	@echo "Use TESTMODULE=1 - To generate exe to test the module code"
+

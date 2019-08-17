@@ -1,5 +1,6 @@
 #
 ifeq ($(OS), Windows_NT)
+	exit
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
@@ -14,56 +15,48 @@ else
 endif
 
 
-THREADS = 1
-
 CC_PATH = 
 CC = $(CC_PATH)gcc
 CC_FLAGS = -Wall -Wextra
 LD_FLAGS = 
 
-ROOTDIR_PATH = $(LINUX_DEVDIR)/Framework
-BUILDDIR_PATH = $(ROOTDIR_PATH)/Exe
-SRCDIR_PATH = $(ROOTDIR_PATH)/Src/SignalHndlr
-INCDIR_PATH = $(ROOTDIR_PATH)/Inc
-OBJDIR_PATH = $(ROOTDIR_PATH)/Obj
+ROOTDIR_PATH := $(LINUX_DEVDIR)/Framework
+BUILDDIR_PATH := $(ROOTDIR_PATH)/Exe
+SRCDIR_PATH := $(ROOTDIR_PATH)/Src/SignalHndlr
+INCDIR_PATH := $(ROOTDIR_PATH)/Inc
+OBJDIR_PATH := $(ROOTDIR_PATH)/Obj
+LIB:=libsignalhandler.a
 
-LIB = libsignalhandler.a
-
-CC_FLAGS := $(CC_FLAGS) -I $(INCDIR_PATH)
-
+CC_FLAGS += -I $(INCDIR_PATH)
 
 ifeq ($(ARCH), 32)
-CC_FLAGS := $(CC_FLAGS) -m32
+	CC_FLAGS += -m32
 endif
 
 ifeq ($(DEBUG), 1)
-CC_FLAGS := $(CC_FLAGS) -g
+CC_FLAGS += -g
 endif
 
-ifeq ($(THREADS), 1)
-LD_FLAGS := $(LD_FLAGS) -lpthread -llog -L$(BUILDDIR_PATH)
-endif
+LD_FLAGS := -lpthread -L$(BUILDDIR_PATH) -llog 
 
 ifeq ($(TESTMODULE), 1)
 OUTFILE = sig
-CC_FLAGS := $(CC_FLAGS) -D__TESTING__
+CC_FLAGS += -D__TESTING__
 CMD = $(CC) $(CC_FLAGS) $(OBJS) $(LD_FLAGS) -o $(BUILDDIR_PATH)/$(OUTFILE)
 else
 OUTFILE = $(LIB)
 CMD = ar -r $(BUILDDIR_PATH)/$(OUTFILE) -o $^
 endif
 
+
 VPATH := $(SRCDIR_PATH)
 
-#SRCS = $(wildcard $(SRCDIR_PATH)/*.c) 
-#OBJS = $(patsubst %.c, $(OBJDIR_PATH)/%.o, $(SRCS))
-
-SRCS := $(shell find $(SRCDIR_PATH) -name '*.c')
-OBJS := $(addprefix $(ROOTDIR_PATH)/,$(SOURCES:%.c=%.o))
+SRCS := $(wildcard $(SRCDIR_PATH)/*.c) 
+OBJS := $(patsubst $(SRCDIR_PATH)/%.c, $(OBJDIR_PATH)/%.o, $(SRCS))
 
 .PHONY: all clean build
 
-all : clean makdir build
+all: clean makdir build
 makdir:
 	mkdir -p $(OBJDIR_PATH)
 	mkdir -p $(BUILDDIR_PATH)
@@ -74,11 +67,11 @@ makdir:
 $(OBJDIR_PATH)/%.o: $(SRCDIR_PATH)/%.c
 		$(CC) -c $(CC_FLAGS) $(LD_FLAGS) $< -o $@
 
-build:	$(OBJS)
-	$(CMD) 
+build: $(OBJS)
+	$(CMD)
 		
-clean :
-	rm -rf $(OBJS) $(BUILDDIR_PATH)/$(OUTFILE)
+clean:
+	rm -f $(OBJS) $(BUILDDIR_PATH)/$(OUTFILE)
 
 help:
 	@echo "Targets:"
@@ -86,3 +79,4 @@ help:
 	@echo "clean - clean all build files"
 	@echo "Use DEBUG=1 - To compile with debugging enabled"
 	@echo "Use TESTMODULE=1 - To generate exe to test the module code"
+

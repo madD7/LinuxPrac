@@ -293,7 +293,8 @@ Notes		: None
 INT main(INT iArgc, CHAR** pArgs)
 {
 	INT iVerb=LOGS_ERROR;
-	FILENAME caAppname = "LogLib";
+	FILENAME caAppname = "Log"; 
+	CHAR* pcAppname=NULL;
 
 	if(iArgc < 3)
 	{
@@ -327,7 +328,17 @@ INT main(INT iArgc, CHAR** pArgs)
         return FAILURE;
 	}
 
-	if ( LOG_Init(pArgs[1], caAppname, iVerb) != 0)
+	pcAppname = strrchr(pArgs[0], '/');
+	if (pcAppname == NULL)
+	{
+		pcAppname = caAppname;
+	}
+	else
+	{
+		pcAppname++;
+	}
+
+	if ( LOG_Init(pArgs[1], pcAppname, iVerb) != 0)
 	{
 		perror("Failed to Initialize LOG ");
 		return -1;

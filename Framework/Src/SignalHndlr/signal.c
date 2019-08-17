@@ -280,12 +280,12 @@ int main(INT iArgc, CHAR *pArgs[])
 	}
 	
 	pcAppname = strrchr(pArgs[0], '/');
-	pcAppname++;
 	if(pcAppname == NULL )
 	{
 		perror("Unable to parse app name ");
 		return FAILURE;
 	}
+	pcAppname++;
 
 	if ( LOG_Init(pArgs[1], pcAppname, LOGS_DEBUG) != SUCCESS )
 	{
