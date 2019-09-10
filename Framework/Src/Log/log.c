@@ -15,7 +15,7 @@ Revision History ***************************************************************
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include "log.h"
+#include "loglib.h"
 
 /* @}
 */

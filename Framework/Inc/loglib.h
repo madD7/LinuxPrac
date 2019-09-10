@@ -9,8 +9,8 @@ Revision History ***************************************************************
 
 
 
-#ifndef		__LOG_H_
-#define		__LOG_H_
+#ifndef		__LOGLIB_H_
+#define		__LOGLIB_H_
 
 
 

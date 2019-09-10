@@ -23,7 +23,7 @@ Revision History ***************************************************************
 /* Include Files **************************************************************************
  * @{
  */
-#include "singalhandler.h"
+#include "signalhandlelib.h"
 
 /*
  * @}
@@ -75,7 +75,7 @@ Output		: None
 Returns		: 
 Notes		: None
 */
-void DefaultSigHandler(INT32 iSignal)
+static void DefaultSigHandler(INT32 iSignal)
 {
 	LOG_FUNC_IN
 

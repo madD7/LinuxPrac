@@ -9,8 +9,8 @@ Revision History ***************************************************************
 
 
 
-#ifndef		__SIGNALHANDLER_H_
-#define		__SIGNALHANDLER_H_
+#ifndef		__SIGNALHANDLELIB_H_
+#define		__SIGNALHANDLELIB_H_
 
 
 
@@ -26,7 +26,7 @@ Revision History ***************************************************************
 #include <pthread.h>
 #include <sys/resource.h>
 #include "constants.h"
-#include "log.h"
+#include "loglib.h"
 /*
 * @}
 */

@@ -64,8 +64,8 @@ Revision History ***************************************************************
  * @{
  */
 #include <sys/ipc.h>
-#include "log.h"
-#include "key.h"
+#include "loglib.h"
+#include "keygenlib.h"
 /*
  * @}
  */
@@ -167,7 +167,6 @@ RETVAL KEY_GenerateKey(INT iKeyType, CHAR* pcKeyPath, CHAR* pcProcName, key_t* p
 	FILEPATH caKeyFilePath;
 	const CHAR *pcKeyStr=NULL;
 	
-
 	LOG_FUNC_IN
 
 	if( piKey == NULL)

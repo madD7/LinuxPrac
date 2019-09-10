@@ -10,8 +10,8 @@ Revision History ***************************************************************
 
 
 
-#ifndef		__KEY_H_     //Replace filename
-#define		__KEY_H_     //Replace filename
+#ifndef		__KEYGENLIB_H_     //Replace filename
+#define		__KEYGENLIB_H_     //Replace filename
 
 
 
@@ -25,7 +25,7 @@ Revision History ***************************************************************
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "log.h"
+#include "loglib.h"
 
 /*
  * @}
