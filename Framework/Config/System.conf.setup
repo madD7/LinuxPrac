@@ -1,0 +1,3 @@
+APP_LOG_PATH=/home/d7/Desktop/LinuxPrac/App/Logs
+FRAMEWORK_LOG_PATH=/home/d7/Desktop/LinuxPrac/Framework/Logs
+ROOTDIR_PATH=/home/d7/Desktop/LinuxPrac
