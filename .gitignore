@@ -50,7 +50,9 @@
 #Folders
 Framework/Obj
 Framework/Exe
+Framework/Logs
 App/Obj
 App/Exe
+App/Logs
 
 
