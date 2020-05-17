@@ -14,7 +14,8 @@
 APP_NAME=LinuxPrac
 ROOTDIR_PATH=`echo ${LINUX_DEVDIR}`
 
-ROOTDIR_PATH=""
+# ROOTDIR_PATH=""
+
 # If $ROOTDIR is not set from bash_profile,
 # but the script is run from bash_profile with the correct path,
 # then the script path is set as ROOTDIR

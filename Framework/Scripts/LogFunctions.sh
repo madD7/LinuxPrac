@@ -107,13 +107,31 @@ LogFunc()
 }
 
 
-TeeFunc()
+LogErrFunc()
 {
-	if [ -z "${LOG_LOGFILE_CREATED}" ]
+	printf ' %-9s %-12s | %s | %s \n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "$*" "`basename $0`" >&2
+
+	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
+	then
+		printf ' %-9s | %-12s | %-9s | %s | %6s | %s | %s-%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR=     " "$*" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
+
+#		echo -e "`date "+%b %d %Y | %H:%M:%S"` | PID=$$ | `basename $0 .sh` | $*" >> ${LOG_LOGFILENAME}
+	else
+		echo "Log is not initialised.... so exiting"
+		exit 9
+	fi
+
+	return 0
+}
+
+
+LogTeeFunc()
+{
+	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
 	then
 		printf ' %-9s | %-12s | %-9s | %s | %6s | %s | %s-%d | %s()\n' "`date "+%b %d %Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR=     " "$*" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" | tee -a ${LOG_LOGFILENAME}
 
-		echo -e "`date "+%b %d %Y | %H:%M:%S"` | PID=$$ | `basename $0 .sh` | $*" >> ${LOG_LOGFILENAME}
+#		echo -e "`date "+%b %d %Y | %H:%M:%S"` | PID=$$ | `basename $0 .sh` | $*" >> ${LOG_LOGFILENAME}
 	else
 	    echo "Log is not initialised.... so exiting"
 	    exit 9
@@ -125,5 +143,6 @@ TeeFunc()
 
 export -f LogInitFunc
 export -f LogFunc
-export -f TeeFunc
+export -f LogErrFunc
+export -f LogTeeFunc
 
