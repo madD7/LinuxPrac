@@ -3,7 +3,28 @@
 #    MAD Engineers
 #     Copyright (c) 2014
 #
-# Description : 
+# Description :
+#				The script exports 4 shell functions that can be used for logging.
+#				The functions give generic patterned log into log file.
+#				The Log file is created with name - <ScriptName>_Script_DD_MM_YYYY.log
+#
+#				Log message pattern in log file
+#	DDMMYYYY | HH:MM:SS.uSec | PID=<PID of Script> | APP | ERROR= <ErrorCode> | User Log Message | <ScriptName> +<LineNo> | <FunctionName>()
+#
+#				LogInitFunc - Creates Log file in the Log directory. 
+#					The function must be called from with user script before using 
+#					the Log functions
+#				
+#				LogFunc - Prints log message into the log file.
+#					Agruments - ErrorCode
+#								User log message
+#					Syntax: 	LogFunc "ErrorCode" "User log message"
+#
+#				LogErrFunc - Prints log message into the log file and reports 
+#							the log message with time stamp on stderr
+#
+#				LogTeeFunc - Prints log message into the log file and simultaneously to stdout
+#
 #
 #Revision History **************************************************************************
 #** Date ** ** Coder ** ***** Remarks ******************************************************
@@ -93,9 +114,13 @@ LogInitFunc()
 
 LogFunc()
 {
+	ERR_CODE="${1}"
+	shift
+	LOG_MSG="${*}"
+
 	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
 	then
-		printf ' %-9s | %-12s | %-9s | %s | %6s | %s | %s-%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR=     " "$*" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
+		printf ' %-9s | %-12s | %-9s | %s | %s%5d | %s | %s +%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR= " "${ERR_CODE}" "${LOG_MSG}" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
 
 #		echo -e "`date "+%b %d %Y | %H:%M:%S"` | PID=$$ | `basename $0 .sh` | $*" >> ${LOG_LOGFILENAME}
 	else
@@ -109,11 +134,15 @@ LogFunc()
 
 LogErrFunc()
 {
+	ERR_CODE="${1}"
+	shift
+	LOG_MSG="${*}"
+
 	printf ' %-9s %-12s | %s | %s \n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "$*" "`basename $0`" >&2
 
 	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
 	then
-		printf ' %-9s | %-12s | %-9s | %s | %6s | %s | %s-%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR=     " "$*" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
+		printf ' %-9s | %-12s | %-9s | %s | %s%5d | %s | %s +%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR= " "${ERR_CODE}" "${LOG_MSG}" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
 
 #		echo -e "`date "+%b %d %Y | %H:%M:%S"` | PID=$$ | `basename $0 .sh` | $*" >> ${LOG_LOGFILENAME}
 	else
@@ -127,9 +156,13 @@ LogErrFunc()
 
 LogTeeFunc()
 {
+	ERR_CODE="${1}"
+	shift	
+	LOG_MSG="${*}"
+
 	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
 	then
-		printf ' %-9s | %-12s | %-9s | %s | %6s | %s | %s-%d | %s()\n' "`date "+%b %d %Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR=     " "$*" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" | tee -a ${LOG_LOGFILENAME}
+		printf ' %-9s | %-12s | %-9s | %s | %s%5d | %s | %s +%d | %s()\n' "`date "+%b %d %Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR= " "${ERR_CODE}" "${LOG_MSG}" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" | tee -a ${LOG_LOGFILENAME}
 
 #		echo -e "`date "+%b %d %Y | %H:%M:%S"` | PID=$$ | `basename $0 .sh` | $*" >> ${LOG_LOGFILENAME}
 	else

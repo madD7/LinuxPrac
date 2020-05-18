@@ -38,6 +38,7 @@
 # Temporary files
 *~
 *.txt
+./tags
 
 # Zipped files
 *.tar.gz

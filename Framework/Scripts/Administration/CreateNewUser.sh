@@ -28,7 +28,7 @@ CheckRootPermission()
 {
 	if [ "${UID}" -ne 0 ]
 	then 
-		LogErrFunc "You do not sufficient permissions. This will be reported."
+		LogErrFunc "2" "You do not sufficient permissions. This will be reported."
 		exit 2
 	fi
 }
@@ -106,16 +106,24 @@ GetRandomChksum()
 # tr - translate or delete characters 
 GenPasswd()
 {
-	GetRandomNumWithIn 12
-	RETVAL=${?}
+	TEMP_PASSWD=""
 	
-	# Generate random character string with length less than 12
-	RANDOM_STR=`cat /dev/random | tr -dc 'a-zA-Z0-9' | head -c${RETVAL}`
+	TEMP_PASSWD_LEN="${#TEMP_PASSWD}"
 
-	GetSpecialChar
-	GetRandomChksum
+	while [ "${TEMP_PASSWD_LEN}" -le 10 ]
+	do
+		GetRandomNumWithIn 12
+		RETVAL=${?}
+	
+		# Generate random character string with length less than 12
+		RANDOM_STR=`cat /dev/random | tr -dc 'a-zA-Z0-9' | head -c${RETVAL}`
 
-	TEMP_PASSWD=`echo ${RANDOM_STR}${SPC_CHAR}${RANDOM_VAL}`
+		GetSpecialChar
+		GetRandomChksum
+
+		TEMP_PASSWD=`echo ${TEMP_PASSWD}${RANDOM_STR}${SPC_CHAR}${RANDOM_VAL}`
+		TEMP_PASSWD_LEN="${#TEMP_PASSWD}"
+	done
 }
 
 
@@ -125,11 +133,22 @@ AddUsr()
 	# add user
 	useradd -c "${COMMENTS}" -m "${USR_NAME}"
 	RETVAL="${?}"
-	if [ "${RETVAL}" -ne 0 ]
-	then
-		LogFunc "Unable to create account"
-		return "${RETVAL}"
-	fi
+
+	case ${RETVAL} in
+		9)
+			LogFunc "${RETVAL}" "User [${USR_NAME}] already exists"
+			return "${RETVAL}"
+			;;
+
+		0)
+			# LogFunc "${RETVAL}" "User [${USR_NAME}] created successfully"
+			;;
+
+		?)
+			LogFunc "${RETVAL}" "Failed to create account for User [${USR_NAME}]"
+			return "${RETVAL}"
+			;;
+	esac
 
 	# Set password to the created user.
 	#echo "${TEMP_PASSWD}" | passwd --stdin "${USR_NAME}" 
@@ -141,7 +160,7 @@ AddUsr()
 	RETVAL="${?}"
 	if [ "${RETVAL}" -ne 0 ]
 	then 
-		LogFunc "Unable to set password for ${USR_NAME}"
+		LogFunc "${RETVAL}" "Unable to set password for ${USR_NAME}"
 		return "${RETVAL}"
 	fi
 
@@ -183,7 +202,7 @@ then
 	exit "${RETVAL}" 
 fi
 
-LogFunc "Created new user [${USR_NAME}] with Passwd [${TEMP_PASSWD}] on Host [${HOSTNAME}]"
+LogFunc "${RETVAL}" "Created new user [${USR_NAME}] with Passwd [${TEMP_PASSWD}] on Host [${HOSTNAME}]"
 exit 0
 
 # End of File
