@@ -26,7 +26,7 @@ SPC_CHARS_STRING=`echo "!@#$%^&*()_+"`
 #Check for the Root permissions
 CheckRootPermission()
 {
-	if [[ "${UID}" -ne 0 ]]
+	if [ "${UID}" -ne 0 ]
 	then 
 		LogErrFunc "2" "You do not sufficient permissions. This will be reported."
 		exit 2
@@ -37,8 +37,12 @@ CheckRootPermission()
 # Print script usage
 PrintHelp()
 {
-	echo "Usage: ${0} <UserName> [Comment] ..."
-	echo "Creates an account on local system with <UserName>"
+	echo "Usage: ${0} [OPTIONS]... <username> [Comment]"
+	echo "-a Creates an account on local system with <UserName>"
+	echo "-c Used to add Comments while adding a new user"
+	echo "-d Delete user"
+	echo "-r Revoke/Disable user"
+	echo "-b Backup user directory to archieve path. Used with delete user option only."
 	echo "with comments, if any." 
 	exit 1
 }
@@ -50,12 +54,12 @@ PrintHelp()
 GetRandomNumWithIn()
 {
 	# Check if the range is passed to the function
-	if [[ -z "${1}" ]]
+	if [ -z "${1}" ]
 	then
 		TRUNCATE=false
 	fi
 
-	if [[ "${1}" -ge 1 ]]
+	if [ "${1}" -ge 1 ]
 	then 
 		TRUNCATE=true
 		MOD="${1}"
@@ -63,16 +67,16 @@ GetRandomNumWithIn()
 		TRUNCATE=false
 	fi
 
-	while [[ true ]]
+	while [ true ]
 	do
 		RANDOM_DIV=`echo ${RANDOM}`
 
-		if [[ "${TRUNCATE}" == "true" ]]
+		if [ "${TRUNCATE}" == "true" ]
 		then
 			RANDOM_DIV=`echo $(( ${RANDOM_DIV} % ${MOD}))`
 		fi
 
-		if [[ "${RANDOM_DIV}" -ge 1 ]]
+		if [ "${RANDOM_DIV}" -ge 1 ]
 		then
 			return ${RANDOM_DIV}
 		fi
@@ -110,7 +114,7 @@ GenPasswd()
 	
 	TEMP_PASSWD_LEN="${#TEMP_PASSWD}"
 
-	while [[ "${TEMP_PASSWD_LEN}" -le 10 ]]
+	while [ "${TEMP_PASSWD_LEN}" -le 10 ]
 	do
 		GetRandomNumWithIn 12
 		RETVAL=${?}
@@ -158,7 +162,7 @@ AddUsr()
 	echo "${USR_NAME}:${TEMP_PASSWD}" | sudo chpasswd	
 
 	RETVAL="${?}"
-	if [[ "${RETVAL}" -ne 0 ]]
+	if [ "${RETVAL}" -ne 0 ]
 	then 
 		LogFunc "${RETVAL}" "Unable to set password for ${USR_NAME}"
 		return "${RETVAL}"
@@ -176,33 +180,102 @@ AddUsr()
 CheckRootPermission
 
 # Check arguments passed 
-if [[ "${#}" -lt 1 ]]
+if [ "${#}" -lt 1 ]
 then
 	PrintHelp
 fi
 
-# The first parameter is username
-USR_NAME="${1}"
+# get all arrguments 
+while getopts a:bc:d:r: OPTIONS
+do
+	case ${OPTIONS} in
+		a)
+			ADD_USR='true'
+			USR_NAME="${OPTARG}"
+			;;
 
-# shift the other arguments 
-shift
+		b)
+			BACKUP='true'
+			;;
 
-# The remaining arguments will be treated as comments
-# "${@}" - Expands to seperate (space seperated) arguments
-# "${*}" - Expands to a single argument 
-COMMENTS="${@}"
+		c)
+			COMMENT='true'
+			COMMENT_MSG="${OPTARG}"
+			;;
 
-# Generate a password 
-GenPasswd
+		d)
+			DELETE_USR='true'
+			USR_NAME="${OPTARG}"
+			;;
 
-AddUsr
-RETVAL="${?}"
-if [[ "${RETVAL}" -ne 0 ]] 
+		r)
+			REVOKE_USR='true'
+			USR_NAME="${OPTARG}"
+			;;
+
+		?)
+			PrintHelp
+			LogFunc "1" "Invalid Argument"
+			exit 1
+			;;
+	esac
+done
+
+# Check Username string length
+if [ -z "${USR_NAME}" ]
 then
-	exit "${RETVAL}" 
+	LogErrFunc "1" "Invalid username [${USR_NAME}] string"
+	exit 1
 fi
 
-LogFunc "${RETVAL}" "Created new user [${USR_NAME}] with Passwd [${TEMP_PASSWD}] on Host [${HOSTNAME}]"
+if [ "${ADD_USR}" == "true" && "${DELETE_USR}" == "true" ]
+then
+	LogFunc "2" "Invalid Arguments"
+	PrintHelp
+	exit 2
+fi
+
+# Check operation to be performed
+if [ "${ADD_USR}" == "true" ]
+then
+
+	# The remaining arguments will be treated as comments
+	# "${@}" - Expands to seperate (space seperated) arguments
+	# "${*}" - Expands to a single argument 
+	# COMMENT_MSG="${@}"
+
+	# Generate a password 
+	GenPasswd
+
+	AddUsr
+	RETVAL="${?}"
+	if [ "${RETVAL}" -ne 0 ] 
+	then
+		exit "${RETVAL}" 
+	fi
+
+	LogFunc "${RETVAL}" "Created new user [${USR_NAME}] with Passwd [${TEMP_PASSWD}] on Host [${HOSTNAME}]"
+
+elif [ "${DELETE_USR}" == "true" ]
+then
+	USR_ID=`id -u "${USR_NAME}"`
+	
+	# UserID must be 1000 or greater.
+	# UserID less than 1000 are reserved for System account
+	if [ "${USR_ID}" -lt 1000 ]
+	then
+		LogErrFunc "2" "Permission deined to delete User [${USR_NAME}] [${USR_ID}]"
+		return 2
+	fi
+
+	if 
+
+
+elif [ "${REVOKE_USR}" == "true" ]
+then
+fi
+
+
 exit 0
 
 # End of File

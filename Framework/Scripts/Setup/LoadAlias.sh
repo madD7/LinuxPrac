@@ -15,7 +15,7 @@
 APP_NAME=LinuxPrac
 ROOTDIR_PATH=`echo ${LINUX_DEVDIR}`
 
-if [ -f "${ROOTDIR_PATH}" ]
+if [[ -f "${ROOTDIR_PATH}" ]]
 then 
 	echo "ROOTDIR_PATH [${ROOTDIR_PATH}] path not found" 1>&2 
 	return 1

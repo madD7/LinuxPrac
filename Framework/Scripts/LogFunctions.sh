@@ -36,22 +36,22 @@ LogInitFunc()
 	SYSCONF_FILE=System.conf
 	LOGDIR_PATH_PATTERN=APP_LOG_PATH
 
-	if [ -z "${ROOTDIR_PATH}" ]
+	if [[ -z "${ROOTDIR_PATH}" ]]
 	then
 		echo "FATAL: ROOTDIR Env variable not configured"
 		exit -9
 	fi
 
-	if [ -z ${SYSTEM_CONF_FILE} ] 
+	if [[ -z ${SYSTEM_CONF_FILE} ]]
 	then 
 		echo "FATAL: SYSTEM_CONF_FILE Env variable not configured"
         exit -9
-	elif [ ! -f ${SYSTEM_CONF_FILE} ]
+	elif [[ ! -f ${SYSTEM_CONF_FILE} ]]
 	then
 		CONFDIR_PATH="${ROOTDIR_PATH}/Framework/Config"
 		SYSTEM_CONF_FILE="${CONFDIR_PATH}/${SYSCONF_FILE}"
 	
-		if [ ! -f "${SYSTEM_CONF_FILE}" ]
+		if [[ ! -f "${SYSTEM_CONF_FILE}" ]]
 		then
 			echo "FATAL: Could not find ${SYSTEM_CONF_FILE} at ${CONFDIR_PATH}"
 			exit -9
@@ -59,21 +59,21 @@ LogInitFunc()
 	fi
 
 	LOGDIR_PATH=`grep "^${LOGDIR_PATH_PATTERN}" ${SYSTEM_CONF_FILE} | awk -F "=" '{print$2}'`
-	if [ -z "$LOGDIR_PATH" ]
+	if [[ -z "$LOGDIR_PATH" ]]
 	then 
 		echo "FATAL: Unable to find $LOGDIR_PATH_PATTERN in ${SYSTEM_CONF_FILE}"
 		exit -9
 	fi
 
 	InitChar=`echo $LOGDIR_PATH | cut -c 1`
-	if [ "$InitChar" == "/" ]
+	if [[ "$InitChar" == "/" ]]
 	then
-		if [ ! -d "${LOGDIR_PATH}" ]
+		if [[ ! -d "${LOGDIR_PATH}" ]]
 		then
 			echo "INFO: ${LOGDIR_PATH} does not exist. Creating directory ${LOGDIR_PATH}"
 
 			mkdir -p ${LOGDIR_PATH}
-			if [ $? -ne 0 ]
+			if [[ $? -ne 0 ]]
 			then 
 				echo "FATAL: Unable to create directory ${LOGDIR_PATH}. Check for sufficient disk space and valid permissions."
 				exit -9
@@ -81,11 +81,11 @@ LogInitFunc()
 		fi
 	else
 		echo "${LOGDIR_PATH} is not an Absolute path"
-		if [ ! -d "${ROOTDIR_PATH}/${LOGDIR_PATH}" ]
+		if [[ ! -d "${ROOTDIR_PATH}/${LOGDIR_PATH}" ]]
 		then 
 			echo "INFO: ${ROOTDIR_PATH}/${LOGDIR_PATH} does not exist. Creating directory ${ROOTDIR_PATH}/${LOGDIR_PATH}"
 			mkdir -p "${ROOTDIR_PATH}/${LOGDIR_PATH}"
-			if [ $? -ne 0 ]
+			if [[ $? -ne 0 ]]
 			then
 				echo "FATAL: Unable to create directory ${ROOTDIR_PATH}/${LOGDIR_PATH}."
 				echo "Check for sufficient disk space and valid permissions."
@@ -97,7 +97,7 @@ LogInitFunc()
 
 	LOG_LOGFILENAME="${LOGDIR_PATH}/`basename $0 .sh`_Script_"`date +%d_%m_%Y`.log
 	touch ${LOG_LOGFILENAME}
-	if [ $? -ne 0 ]
+	if [[ $? -ne 0 ]]
 	then
 		echo "FATAL: Unable to create ${LOG_LOGFILENAME}"
 		exit -9
@@ -118,7 +118,7 @@ LogFunc()
 	shift
 	LOG_MSG="${*}"
 
-	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
+	if [[ "${LOG_LOGFILE_CREATED}" == "TRUE" ]]
 	then
 		printf ' %-9s | %-12s | %-9s | %s | %s%5d | %s | %s +%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR= " "${ERR_CODE}" "${LOG_MSG}" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
 
@@ -140,7 +140,7 @@ LogErrFunc()
 
 	printf ' %-9s %-12s | %s | %s \n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "$*" "`basename $0`" >&2
 
-	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
+	if [[ "${LOG_LOGFILE_CREATED}" == "TRUE" ]]
 	then
 		printf ' %-9s | %-12s | %-9s | %s | %s%5d | %s | %s +%d | %s()\n' "`date "+%d%b%Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR= " "${ERR_CODE}" "${LOG_MSG}" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" >> ${LOG_LOGFILENAME}
 
@@ -160,7 +160,7 @@ LogTeeFunc()
 	shift	
 	LOG_MSG="${*}"
 
-	if [ "${LOG_LOGFILE_CREATED}" == "TRUE" ]
+	if [[ "${LOG_LOGFILE_CREATED}" == "TRUE" ]]
 	then
 		printf ' %-9s | %-12s | %-9s | %s | %s%5d | %s | %s +%d | %s()\n' "`date "+%b %d %Y"`" "`date +%T.%N|cut -b1-12`" "PID=$$" "APP" "ERROR= " "${ERR_CODE}" "${LOG_MSG}" "`basename $0`" "${BASH_LINENO[0]}" "${FUNCNAME[1]}" | tee -a ${LOG_LOGFILENAME}
 

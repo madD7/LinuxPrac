@@ -19,7 +19,7 @@ ROOTDIR_PATH=`echo ${LINUX_DEVDIR}`
 # If $ROOTDIR is not set from bash_profile,
 # but the script is run from bash_profile with the correct path,
 # then the script path is set as ROOTDIR
-if [ -z "${ROOTDIR_PATH}" ]
+if [[ -z "${ROOTDIR_PATH}" ]]
 then 
 	SCRIPT=`echo ${BASH_SOURCE[0]}`
 	SCR_PATH=`echo $(dirname $SCRIPT)`
@@ -28,7 +28,7 @@ then
 	#ROOTDIR_PATH=`echo ${LOCATION%$APPFOLDER*}`$APPFOLDER
 	ROOTDIR_PATH=`echo ${LOCATION} | awk -F'/Framework' '{print $1}' `
 	
-	if [ -d "${ROOTDIR_PATH}" ]
+	if [[ -d "${ROOTDIR_PATH}" ]]
 	then
 		export ROOTDIR_PATH
 	else
@@ -39,7 +39,7 @@ then
 fi
 
 SYSTEM_CONF_FILE="${ROOTDIR_PATH}/Framework/Config/System.conf"
-if [ ! -f "${SYSTEM_CONF_FILE}" ]
+if [[ ! -f "${SYSTEM_CONF_FILE}" ]]
 then 
 	echo "System conf File ["${SYSTEM_CONF_FILE}"] not found" 1&>2
 	return 1
@@ -49,7 +49,7 @@ export SYSTEM_CONF_FILE
 
 Chk=""
 Chk=`grep '^ROOTDIR_PATH' "${SYSTEM_CONF_FILE}" | awk -F "=" '{print$2}'`
-if [ -z ${Chk} ]
+if [[ -z "${Chk}" ]]
 then
 	echo "ROOTDIR_PATH=${ROOTDIR_PATH}" >> "${SYSTEM_CONF_FILE}"
 fi
@@ -59,7 +59,7 @@ sed -i.setup "s,\${ROOTDIR_PATH},${ROOTDIR_PATH},g" "${SYSTEM_CONF_FILE}"
 
 Chk=""
 Chk=`grep '^APP_LOG_PATH' "${SYSTEM_CONF_FILE}" | awk -F "=" '{print$2}'`
-if [ -z ${Chk} ]
+if [[ -z "${Chk}" ]]
 then
 	APP_LOG_PATH="${ROOTDIR_PATH}/App/Logs"
     echo "APP_LOG_PATH=${APP_LOG_PATH}" >> "${SYSTEM_CONF_FILE}"
@@ -68,17 +68,17 @@ else
 fi
 
 
-if [ ! -d ${APP_LOG_PATH} ]
+if [[ ! -d "${APP_LOG_PATH}" ]]
 then
 	mkdir -p "${APP_LOG_PATH}"
 	export APP_LOG_PATH 
 fi
 
 FSCR_PATH="${ROOTDIR_PATH}/Framework/Scripts"
-if [ -f "${FSCR_PATH}/LogFunctions.sh" ]
+if [[ -f "${FSCR_PATH}/LogFunctions.sh" ]]
 then
 	chmod 755 ${FSCR_PATH}/LogFunctions.sh
-	if [ $? -ne 0 ]
+	if [[ $? -ne 0 ]]
 	then
 		echo "FATAL: Unable to change the permissions for LogFunctions.sh" 1>&2 
 		exit 2
